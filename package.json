@@ -1,0 +1,14 @@
+{
+  "name": "nodes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "vite serve"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^3.2.4"
+  }
+}
