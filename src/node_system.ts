@@ -5,47 +5,60 @@ import Vec2 from "./vec2";
 
 export default class NodeSystem {
     public connections: Connection[] = [];
-    public nodes: Node<any>[] = [];
+    public nodes: Node[] = [];
 
-    private readonly hashGrid = new HashGrid<Node<any>>(25, new Vec2(2000, 2000));
+    private readonly hashGrid = new HashGrid<Node>(25, new Vec2(2000, 2000));
     private readonly tmp_vec = new Vec2();
 
+    public readonly element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    private nodeElements = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    private lineElements = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
-    addNode<T>(payload: T): Node<T> {
+    constructor() {
+        this.element.append(this.lineElements, this.nodeElements);
+        this.element.classList.add("node_system");
+        this.element.setAttribute("viewBox", "650 650 700 700");
+    }
+
+    addNode(payload: string): Node {
         let node = new Node(this, payload);
         this.nodes.push(node);
+        this.nodeElements.appendChild(node.element);
         return node;
     }
 
-    connect(a: Node<any>, b: Node<any>) {
+    connect(a: Node, b: Node) {
         let connection = new Connection(this, a, b);
         a.addConnection(connection);
         b.addConnection(connection);
         this.connections.push(connection);
+        this.lineElements.append(connection.element);
         return connection;
     }
 
-    removeNode(node: Node<any>) {
+    removeNode(node: Node) {
+        this.element.removeChild(node.element);
         node.dispose();
         this.nodes.remove(node);
     }
 
     removeConnection(connection: Connection) {
+        this.element.removeChild(connection.element);
         connection.dispose();
         this.connections.remove(connection);
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
+    draw() {
         for (let node of this.nodes) {
-            node.draw(ctx);
+            node.draw();
         }
 
         for (let conn of this.connections) {
-            conn.draw(ctx);
+            conn.draw();
         }
     }
 
-    randNode(): Node<any> {
+    randNode(): Node {
         return this.nodes[Math.floor(Math.random() * this.nodes.length)];
     }
 
@@ -78,7 +91,7 @@ export default class NodeSystem {
         })
     }
 
-    doRepulsion(a: Node<any>, b: Node<any>) {
+    doRepulsion(a: Node, b: Node) {
         this.tmp_vec.copy(a.position).sub(b.position);
         let d = this.tmp_vec.magnitudeSq();
         if (d < 500) {

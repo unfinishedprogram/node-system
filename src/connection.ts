@@ -4,16 +4,20 @@ function clamp(val: number, min: number, max: number) {
     return Math.min(Math.max(val, min), max);
 }
 export default class Connection {
-    constructor(private system: NodeSystem, public readonly a: Node<any>, public readonly b: Node<any>) { }
+    public readonly element = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+
+    constructor(private system: NodeSystem, readonly a: Node, readonly b: Node) { }
 
     dispose() {
         this.a?.removeConnection(this);
         this.b?.removeConnection(this);
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
-        ctx.moveTo(this.a.position.x, this.a.position.y);
-        ctx.lineTo(this.b.position.x, this.b.position.y);
+    draw() {
+        this.element.setAttribute("x1", `${this.a.position.x}`);
+        this.element.setAttribute("y1", `${this.a.position.y}`);
+        this.element.setAttribute("x2", `${this.b.position.x}`);
+        this.element.setAttribute("y2", `${this.b.position.y}`);
     }
 
     get length() {

@@ -1,4 +1,5 @@
 import NodeSystem from "./node_system";
+import Wikipedia from "./wikipedia";
 export { }
 
 declare global {
@@ -16,32 +17,22 @@ Array.prototype["remove"] = function (item) {
     return false;
 }
 
-const c = document.querySelector("#canvas") as HTMLCanvasElement;
-const ctx = c.getContext("2d")!;
-
 let system = new NodeSystem();
 
-c.width = 2000;
-c.height = 2000;
+document.querySelector("#svg_container")?.appendChild(system.element);
 
-ctx.strokeStyle = "white";
-
-const center = system.addNode(0);
+const center = system.addNode("India");
 center.locked = true;
 center.setPosition(1000, 1000);
 
 const step = () => {
-    ctx.clearRect(0, 0, 2000, 2000)
-    ctx.beginPath();
-    system.draw(ctx);
     system.step();
-    ctx.stroke();
-    // requestAnimationFrame(step);
+    system.draw();
 }
 
 const appendNode = () => {
     let r = system.randNode();
-    r.addChild(0);
+    Wikipedia.getRandomArticle().then(name => r.addChild(name));
 }
 
 let deltaT = 0;
@@ -60,18 +51,17 @@ const bench = () => {
     deltas.splice(0, 1);
     deltas.push(deltaT);
 
-    if (system.nodes.length % 100 == 0) {
+    if (system.nodes.length % 10 == 0) {
         console.log(system.nodes.length / deltaT, system.nodes.length, deltaT);
     }
 
-
-    requestAnimationFrame(bench);
-
-    // if (Math.min(Math.min(Math.min(deltas[0], deltas[1], deltas[2], deltas[3]))) < 16) {
-    // } else {
-    // console.log("DONE:", system.nodes.length)
-    // }
+    if (Math.min(Math.min(Math.min(deltas[0], deltas[1], deltas[2], deltas[3]))) < 16) {
+        requestAnimationFrame(bench);
+    } else {
+        console.log("DONE:", system.nodes.length)
+    }
 }
+
 
 
 // setInterval(() => appendNode(), 100)
