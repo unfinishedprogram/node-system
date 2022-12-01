@@ -11,11 +11,13 @@ export default class NodeSystem {
     private readonly tmp_vec = new Vec2();
 
     public readonly element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
     private lineElements = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    private nodeElements = document.createElementNS("http://www.w3.org/2000/svg", "g");
     private markElements = document.createElementNS("http://www.w3.org/2000/svg", "defs");
 
     constructor() {
-        this.element.append(this.lineElements, this.markElements);
+        this.element.append(this.lineElements, this.nodeElements, this.markElements);
         this.element.classList.add("node_system");
         this.element.setAttribute("viewBox", "650 650 700 700");
     }
@@ -26,6 +28,8 @@ export default class NodeSystem {
 
     addNode(payload: string): Node {
         let node = new Node(this, payload);
+        this.nodeElements.append(node.element);
+        this.markElements.append(node.marker);
         this.nodes.push(node);
         return node;
     }

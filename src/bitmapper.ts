@@ -35,6 +35,7 @@ export default class Rasterizer {
             }
             try {
                 let str = this.canvas.toDataURL();
+                this.imageCache.set(url, str);
                 res(str);
             } catch (e) {
                 console.error("Image corrupted canvas")
