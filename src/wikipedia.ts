@@ -14,7 +14,6 @@ export default class Wikipedia {
     public static async getImageUrl(imgName: string): Promise<string> {
         const url = `${Wikipedia.baseURL}${Wikipedia.baseQuery}&prop=imageinfo&iiprop=url&titles=${imgName}&continue=&origin=*`
         let data = await (await fetch(url, Wikipedia.headers)).json();
-        console.log(data);
         let id = Object.keys(data.query.pages)[0];
         return data.query.pages[id].imageinfo[0].url;
     }
@@ -40,7 +39,6 @@ export default class Wikipedia {
 
             let id = Object.keys(data.query.pages)[0];
             if (data.query.pages[id].images) {
-                console.log(data.query.pages[id].images[0]);
                 return await Wikipedia.getImageUrl(data.query.pages[id].images[0].title)
             }
         }

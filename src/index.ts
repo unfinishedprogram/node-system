@@ -31,34 +31,45 @@ const step = () => {
 }
 
 const appendNode = () => {
-    let r = system.randNode();
-    Wikipedia.getRandomArticle().then(name => r.addChild(name));
+    return new Promise(res => {
+        let r = system.randNode();
+        Wikipedia.getRandomArticle().then(name => res(r.addChild(name)));
+    })
 }
 
 let deltaT = 0;
 
 let deltas = [0, 0, 0, 0];
 
+const setup = async () => {
+    for (let i = 0; i < 300; i++) {
+        await appendNode();
+    }
+    console.log("DONE")
+}
+
+setup()
+
+// 80fps
+
 const bench = () => {
     let t = performance.now();
     step();
 
-    if (Math.random() > 0.98) appendNode()
-
-    system.step();
+    // if (Math.random() > 0.98) appendNode()
 
     deltaT = performance.now() - t;
     deltas.splice(0, 1);
     deltas.push(deltaT);
 
     if (system.nodes.length % 10 == 0) {
-        console.log(system.nodes.length / deltaT, system.nodes.length, deltaT);
+        // console.log(system.nodes.length / deltaT, system.nodes.length, deltaT);
     }
 
     if (Math.min(Math.min(Math.min(deltas[0], deltas[1], deltas[2], deltas[3]))) < 16) {
         requestAnimationFrame(bench);
     } else {
-        console.log("DONE:", system.nodes.length)
+        // console.log("DONE:", system.nodes.length)
     }
 }
 

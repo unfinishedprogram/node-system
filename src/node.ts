@@ -134,7 +134,7 @@ export default class Node {
     }
 
     private setupMouseEvents() {
-        Wikipedia.fetchPageUrl(payload).then(url => this.element.onclick = () => window.open(url, '_blank'));
+        Wikipedia.fetchPageUrl(this.payload).then(url => this.element.onclick = () => window.open(url, '_blank'));
         this.element.addEventListener("mousedown", this.startDrag);
     }
 }

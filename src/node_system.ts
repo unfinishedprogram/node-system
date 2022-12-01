@@ -120,8 +120,8 @@ export default class NodeSystem {
     }
 
     step() {
+        this.applyNeighborRepulsion();
         this.stepConnections();
         this.stepNodes();
-        this.applyNeighborRepulsion();
     }
 }
