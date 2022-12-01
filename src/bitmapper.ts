@@ -1,22 +1,45 @@
-const canvas = document.createElement("canvas");
+export default class Rasterizer {
+    private imageCache = new Map<string, string>();
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
 
-const ctx = canvas.getContext("2d")!;
-const _s = 128;
-const [w, h] = [_s, _s];
+    constructor(private resolution = 64) {
+        this.resetCanvas();
+    }
 
-canvas.width = w;
-canvas.height = h;
+    // Used for when the canvas becomes tainted
+    private resetCanvas() {
+        this.canvas?.remove()
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = this.resolution;
+        this.canvas.height = this.resolution;
+        this.ctx = this.canvas.getContext("2d")!;
+    }
 
-export default function makeBitmap(url: string): Promise<string> {
-    return new Promise((res, _) => {
-        const img = document.createElement("img");
-        img.crossOrigin = "anonymous";
-        img.src = url;
-        img.onload = () => {
-            ctx.clearRect(0, 0, w, h);
-            ctx.drawImage(img, 0, 0, w, h);
-            res(canvas.toDataURL());
-        }
-        img.remove();
-    });
+    private clearCanvas() {
+        this.ctx.clearRect(0, 0, this.resolution, this.resolution);
+    }
+
+    // Renders a given image from a url, and returns a base64 encoded version
+    public async rasterize(url: string): Promise<string> {
+        let cached = this.imageCache.get(url);
+        if (cached) return cached;
+
+        return new Promise(res => {
+            const img = document.createElement("img");
+            img.src = url;
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+                this.clearCanvas();
+                this.ctx.drawImage(img, 0, 0, this.resolution, this.resolution);
+            }
+            try {
+                let str = this.canvas.toDataURL();
+                res(str);
+            } catch (e) {
+                console.error("Image corrupted canvas")
+                this.resetCanvas();
+            }
+        })
+    }
 }

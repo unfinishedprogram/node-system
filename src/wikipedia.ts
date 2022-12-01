@@ -1,9 +1,10 @@
-import makeBitmap from "./bitmapper";
+import Rasterizer from "./bitmapper";
 
 export default class Wikipedia {
     private static baseURL = "https://en.wikipedia.org/w/api.php"
     private static baseQuery = "?action=query&format=json"
 
+    private static rasterizer = new Rasterizer(32);
     private static headers: RequestInit = {
         headers: {
             'Content-Type': 'application/json'
@@ -47,7 +48,7 @@ export default class Wikipedia {
     }
 
     public static async fetchPageImage(title: string): Promise<string> {
-        return await makeBitmap(await Wikipedia.fetchPageImageURL(title))
+        return await this.rasterizer.rasterize(await Wikipedia.fetchPageImageURL(title));
     }
 
     public static async getRandomArticle(): Promise<string> {
