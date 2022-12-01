@@ -6,7 +6,9 @@ function clamp(val: number, min: number, max: number) {
 export default class Connection {
     public readonly element = document.createElementNS('http://www.w3.org/2000/svg', 'line');
 
-    constructor(private system: NodeSystem, readonly a: Node, readonly b: Node) { }
+    constructor(private system: NodeSystem, readonly a: Node, readonly b: Node) {
+        this.element.setAttribute("marker-end", `url(#${b.id})`)
+    }
 
     dispose() {
         this.a?.removeConnection(this);

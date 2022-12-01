@@ -4,6 +4,11 @@ export default class HashGrid<T extends { id: number, position: Vec2 }> {
     grid: T[][][] = [];
     items: T[];
 
+
+    private readonly _result: T[] = [];
+    private readonly _bins: T[][] = [];
+    private readonly _set: Set<T> = new Set();
+
     width: number;
     height: number;
 
@@ -33,7 +38,7 @@ export default class HashGrid<T extends { id: number, position: Vec2 }> {
     resetGrid() {
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {
-                this.grid[x][y] = [];
+                this.grid[x][y].length = 0;
             }
         }
     }
@@ -41,26 +46,23 @@ export default class HashGrid<T extends { id: number, position: Vec2 }> {
     getAdj(item: T) {
         const x = this.hash(item.position.x);
         const y = this.hash(item.position.y);
-        const cacheSet = new Set<T>();
-        const result: T[] = [];
+        // this._set.clear();
 
-        const bins = [
-            this.getBin(x, y),
-            this.getBin(x + 1, y),
-            this.getBin(x, y + 1),
-            this.getBin(x + 1, y + 1)
-        ]
+        this._bins[0] = this.getBin(x, y);
+        this._bins[1] = this.getBin(x + 1, y);
+        this._bins[2] = this.getBin(x, y + 1);
+        this._bins[3] = this.getBin(x + 1, y + 1);
 
-        for (const bin of bins) {
+        this._result.length = 0;
+        for (const bin of this._bins) {
             for (const item of bin) {
-                if (!cacheSet.has(item)) {
-                    cacheSet.add(item);
-                    result.push(item);
+                if (!this._result.includes(item)) {
+                    this._result.push(item);
                 }
             }
         }
 
-        return result;
+        return this._result;
     }
 
     getBin(x: number, y: number) {

@@ -11,19 +11,22 @@ export default class NodeSystem {
     private readonly tmp_vec = new Vec2();
 
     public readonly element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    private nodeElements = document.createElementNS("http://www.w3.org/2000/svg", "g");
     private lineElements = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    private markElements = document.createElementNS("http://www.w3.org/2000/svg", "defs");
 
     constructor() {
-        this.element.append(this.lineElements, this.nodeElements);
+        this.element.append(this.lineElements, this.markElements);
         this.element.classList.add("node_system");
         this.element.setAttribute("viewBox", "650 650 700 700");
+    }
+
+    addMarker(marker: SVGMarkerElement) {
+        this.markElements.append(marker);
     }
 
     addNode(payload: string): Node {
         let node = new Node(this, payload);
         this.nodes.push(node);
-        this.nodeElements.appendChild(node.element);
         return node;
     }
 
@@ -37,7 +40,7 @@ export default class NodeSystem {
     }
 
     removeNode(node: Node) {
-        this.element.removeChild(node.element);
+        this.markElements.querySelector(`#${node.id}`)?.remove();
         node.dispose();
         this.nodes.remove(node);
     }

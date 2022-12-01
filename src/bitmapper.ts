@@ -17,5 +17,6 @@ export default function makeBitmap(url: string): Promise<string> {
             ctx.drawImage(img, 0, 0, w, h);
             res(canvas.toDataURL());
         }
+        img.remove();
     });
 }
